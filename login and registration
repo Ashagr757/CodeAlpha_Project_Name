@@ -1,0 +1,98 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <unordered_map>
+
+class UserManager {
+private:
+    std::unordered_map<std::string, std::string> users; // Stores username and password pairs
+
+    void loadUsers() {
+        std::ifstream file("users.txt");
+        if (file.is_open()) {
+            std::string username, password;
+            while (file >> username >> password) {
+                users[username] = password;
+            }
+            file.close();
+        }
+    }
+
+    void saveUsers() {
+        std::ofstream file("users.txt");
+        if (file.is_open()) {
+            for (const auto& user : users) {
+                file << user.first << " " << user.second << std::endl;
+            }
+            file.close();
+        }
+    }
+
+public:
+    UserManager() {
+        loadUsers();
+    }
+
+    ~UserManager() {
+        saveUsers();
+    }
+
+    bool registerUser(const std::string& username, const std::string& password) {
+        if (users.find(username) != users.end()) {
+            return false; // User already exists
+        }
+        users[username] = password;
+        return true;
+    }
+
+    bool loginUser(const std::string& username, const std::string& password) {
+        if (users.find(username) != users.end() && users[username] == password) {
+            return true; // Login successful
+        }
+        return false; // Login failed
+    }
+};
+
+int main() {
+    UserManager userManager;
+    int choice;
+    std::string username, password;
+
+    while (true) {
+        std::cout << "1. Register\n2. Login\n3. Exit\nEnter your choice: ";
+        std::cin >> choice;
+
+        switch (choice) {
+            case 1:
+                std::cout << "Enter username: ";
+                std::cin >> username;
+                std::cout << "Enter password: ";
+                std::cin >> password;
+
+                if (userManager.registerUser(username, password)) {
+                    std::cout << "Registration successful!\n";
+                } else {
+                    std::cout << "Username already exists.\n";
+                }
+                break;
+            case 2:
+                std::cout << "Enter username: ";
+                std::cin >> username;
+                std::cout << "Enter password: ";
+                std::cin >> password;
+
+                if (userManager.loginUser(username, password)) {
+                    std::cout << "Login successful!\n";
+                } else {
+                    std::cout << "Invalid username or password.\n";
+                }
+                break;
+            case 3:
+                return 0;
+            default:
+                std::cout << "Invalid choice. Please try again.\n";
+        }
+    }
+
+    return 0;
+}
