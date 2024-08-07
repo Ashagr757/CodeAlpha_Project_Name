@@ -1,0 +1,86 @@
+#include <iostream>
+#include <vector>
+#include <iomanip>
+
+using namespace std;
+
+class Course {
+public:
+    string name;
+    double grade;
+    int credits;
+
+    Course(string n, double g, int c) : name(n), grade(g), credits(c) {}
+};
+
+class Student {
+private:
+    vector<Course> courses;
+
+public:
+    void addCourse(const string& name, double grade, int credits) {
+        courses.push_back(Course(name, grade, credits));
+    }
+
+    double calculateCGPA() {
+        double totalGradePoints = 0.0;
+        int totalCredits = 0;
+
+        for (const auto& course : courses) {
+            totalGradePoints += course.grade * course.credits;
+            totalCredits += course.credits;
+        }
+
+        return (totalCredits == 0) ? 0.0 : totalGradePoints / totalCredits;
+    }
+
+    void displayCourses() {
+        cout << "\nCourses List:\n";
+        cout << "Name\tGrade\tCredits\n";
+        for (const auto& course : courses) {
+            cout << course.name << "\t" << course.grade << "\t" << course.credits << endl;
+        }
+    }
+};
+
+int main() {
+    Student student;
+    int choice;
+    string courseName;
+    double courseGrade;
+    int courseCredits;
+
+    while (true) {
+        cout << "\nCGPA Calculator Menu:\n";
+        cout << "1. Add Course\n";
+        cout << "2. Calculate CGPA\n";
+        cout << "3. Display Courses\n";
+        cout << "4. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter Course Name: ";
+                cin >> courseName;
+                cout << "Enter Grade (0.0 - 4.0): ";
+                cin >> courseGrade;
+                cout << "Enter Credits: ";
+                cin >> courseCredits;
+                student.addCourse(courseName, courseGrade, courseCredits);
+                break;
+            case 2:
+                cout << fixed << setprecision(2);
+                cout << "Current CGPA: " << student.calculateCGPA() << endl;
+                break;
+            case 3:
+                student.displayCourses();
+                break;
+            case 4:
+                cout << "Thank you for using the CGPA Calculator!" << endl;
+                return 0;
+            default:
+                cout << "Invalid choice! Please try again." << endl;
+        }
+    }
+}
